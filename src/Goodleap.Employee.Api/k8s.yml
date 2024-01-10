@@ -1,0 +1,40 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goodleap-employee-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: goodleap-employee-api
+  template:
+    metadata:
+      labels:
+        app: goodleap-employee-api
+    spec:
+      containers:
+      - name: goodleap-employee-api
+        image: goodleap.employee.azurecr.io/appaccount:__Build.BuildId__
+        ports:
+        - containerPort: 80 
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: CONFIG_CN_APP_EXTERNAL
+          value: "Endpoint=https://configaforo255-ica.azconfig.io;Id=p4tR;Secret=N9jnkUnV+rLGItZpYP8fYvGz01R4hVMUF5eFs6TRSFk="
+      imagePullSecrets:
+      - name: goodleap.com
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goodleap-employee-api-service
+spec:
+  selector:
+    app: goodleap-employee-api
+  ports:
+    - protocol: TCP
+      port: 80 
+      targetPort: 80
+  type: LoadBalancer
